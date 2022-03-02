@@ -1,0 +1,21 @@
+
+
+read_verilog -sv nngenmod.v
+# read_verilog -sv work/cifar10/fifo_bram_32_40.sv
+hierarchy -top nngenmod
+
+blackbox ram_*
+# blackbox madd_*
+# blackbox madd_core_*
+# blackbox multiplier_*
+# blackbox multiplier_core_*
+proc; opt
+flatten; opt
+# techmap -map /usr/share/yosys/techmap.v; opt
+techmap -map mytechmap.v; opt
+# dfflibmap -liberty /usr/share/yosys/cells.lib; opt
+abc -lut 4; opt
+clean
+# write_blif -cname -conn -noalias -impltf -blackbox presynthesis.blif
+write_verilog -noexpr -decimal presynthesis.v
+write_verilog -noexpr -decimal -blackboxes presynthesis_bb.v
